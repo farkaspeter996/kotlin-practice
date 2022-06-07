@@ -2,7 +2,7 @@ package hu.neuron.dto
 
 data class ClientDTO (
 
-    val id: Long = 0,
+    val id: Int = 0,
 
     val clientName: String = "",
 
@@ -16,5 +16,5 @@ data class ClientDTO (
 
     val clientAddressCity: String = "",
 
-    val contacts: List<ContactDTO> = emptyList()
+    var contacts: List<ContactDTO> = emptyList()
 )

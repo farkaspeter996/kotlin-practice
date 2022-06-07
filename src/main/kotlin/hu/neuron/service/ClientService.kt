@@ -8,7 +8,7 @@ interface ClientService {
 
     fun getClientByName(clientName: String): List<ClientDTO>
 
-    fun saveClient(clientDTO: ClientDTO) : Long
+    fun saveClient(clientDTO: ClientDTO) : Int
 
     fun getClientById(clientId: Long): ClientDTO
 }

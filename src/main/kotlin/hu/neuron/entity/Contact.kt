@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 data class Contact(
 
     @Id
-    val id: Long = 0,
+    val id: Int = 0,
 
     val clientContactName: String = "",
 
@@ -19,5 +19,5 @@ data class Contact(
 
     val clientContactDate: LocalDateTime = LocalDateTime.now(),
 
-    val clientId: Long = 0
+    var clientId: Int = 0
 )

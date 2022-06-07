@@ -7,7 +7,7 @@ import org.springframework.data.relational.core.mapping.MappedCollection
 data class Client (
 
     @Id
-    val id: Long = 0,
+    val id: Int = 0,
 
     val clientName: String = "",
 

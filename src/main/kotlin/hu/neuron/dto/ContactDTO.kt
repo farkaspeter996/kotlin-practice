@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 
 data class ContactDTO (
 
-    val id: Long = 0,
+    val id: Int = 0,
 
     val clientContactName: String = "",
 
@@ -24,5 +24,5 @@ data class ContactDTO (
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     val clientContactDate: LocalDateTime = LocalDateTime.now(),
 
-    val clientId: Long = 0
+    val clientId: Int = 0
 )

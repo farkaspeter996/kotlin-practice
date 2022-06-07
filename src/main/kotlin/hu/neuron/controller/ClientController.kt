@@ -19,7 +19,7 @@ class ClientController( @Autowired private val clientService: ClientService) {
     @PostMapping("/client")
     fun saveClient(@RequestBody clientDTO: ClientDTO) : ResponseEntity<BaseResponse>{
         return try{
-            val clientId: Long = clientService.saveClient(clientDTO)
+            val clientId: Int = clientService.saveClient(clientDTO)
             ResponseEntity.ok(BaseResponse(true, "User has saved successfully with id: $clientId"))
         } catch(exception: Exception){
             ResponseEntity.ok(BaseResponse(false, exception.message!!))

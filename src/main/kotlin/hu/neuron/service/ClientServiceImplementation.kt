@@ -9,6 +9,7 @@ import hu.neuron.repository.ContactRepository
 import hu.neuron.util.sortByFields
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 
 @Service
@@ -36,11 +37,15 @@ class ClientServiceImplementation(
         return clientDTOS
     }
 
-    override fun saveClient(clientDTO: ClientDTO): Long {
+    @Transactional(rollbackFor = [Exception::class])
+    override fun saveClient(clientDTO: ClientDTO): Int {
         try {
             val client = clientDTO.toClientEntity()
-            return clientRepo.save(client).id
+            val clientId = clientRepo.save(client).id
+            client.contacts.forEach { it.clientId = clientId }
+            contactRepo.saveAll(client.contacts)
         } catch (exception: Exception) {
+            println(exception.printStackTrace())
             throw Exception("Save was not successful")
         }
         return 0
