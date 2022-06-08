@@ -6,6 +6,7 @@ import hu.neuron.service.ClientService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/api")
@@ -26,10 +27,16 @@ class ClientController( @Autowired private val clientService: ClientService) {
         }
     }
 
-    @GetMapping("/id/{clientId}")
-    fun getClientById(@PathVariable clientId: Long): ResponseEntity<ClientDTO>{
+    @GetMapping("/clientById")
+    fun getClientById(@RequestParam clientId: Long): ResponseEntity<ClientDTO>{
         val clientDTO : ClientDTO = clientService.getClientById(clientId)
         return ResponseEntity.ok(clientDTO)
+    }
+
+    @GetMapping("/clientsByContactDate")
+    fun getClientsByContactDate(@RequestParam startDate: LocalDateTime, @RequestParam endDate: LocalDateTime): ResponseEntity<List<ClientDTO>>{
+        val clientDTOs : List<ClientDTO> = clientService.getClientsByContactDate(startDate, endDate)
+        return ResponseEntity.ok(clientDTOs)
     }
 
 }

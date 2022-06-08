@@ -19,8 +19,8 @@ data class Client (
 
     val clientAddressPostCode: Int = 0,
 
-    val clientAddressCity: String = "",
+    var clientAddressCity: String = "",
 
-    @MappedCollection(idColumn = "client_id")
-    val contacts: List<Contact> = emptyList()
+    @MappedCollection(idColumn = "client_id", keyColumn = "id")
+    var contacts: List<Contact> = emptyList()
 )

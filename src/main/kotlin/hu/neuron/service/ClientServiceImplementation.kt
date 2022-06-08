@@ -6,16 +6,21 @@ import hu.neuron.mapper.toClientDTO
 import hu.neuron.mapper.toClientEntity
 import hu.neuron.repository.ClientRepo
 import hu.neuron.repository.ContactRepository
+import hu.neuron.repository.PostCodeToCityRepository
 import hu.neuron.util.sortByFields
+import hu.neuron.util.validate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 
 
 @Service
 class ClientServiceImplementation(
     @Autowired private val clientRepo: ClientRepo,
-    @Autowired private val contactRepo: ContactRepository
+    @Autowired private val contactRepo: ContactRepository,
+    @Autowired private val postCodeToCityRepo: PostCodeToCityRepository
+    //@Autowired private val template : JdbcAggregateTemplate
 ) : ClientService {
 
     //@Cacheable(cacheNames = ["existsClientByName"])
@@ -40,20 +45,37 @@ class ClientServiceImplementation(
     @Transactional(rollbackFor = [Exception::class])
     override fun saveClient(clientDTO: ClientDTO): Int {
         try {
+            clientDTO.validate()
+            clientDTO.contacts.forEach { it.validate()}
+
             val client = clientDTO.toClientEntity()
+
+            val contacts = client.contacts
+            client.contacts = emptyList()
+
+            client.clientAddressCity = postCodeToCityRepo.findCityByPostcode(client.clientAddressPostCode)
             val clientId = clientRepo.save(client).id
-            client.contacts.forEach { it.clientId = clientId }
-            contactRepo.saveAll(client.contacts)
+
+            contacts.forEach{
+                it.clientId = clientId
+                it.clientContactType = ContactTypeEnum.from(it.clientContactType)
+            }
+
+            contactRepo.saveAll(contacts)
+
+            return clientId
         } catch (exception: Exception) {
-            println(exception.printStackTrace())
-            throw Exception("Save was not successful")
+            throw exception
         }
-        return 0
     }
 
     override fun getClientById(clientId: Long): ClientDTO {
-        val client: Client = clientRepo.findClientById(clientId)
+        val client = clientRepo.findClientById(clientId)
         return client.toClientDTO()
     }
 
+    override fun getClientsByContactDate(startDate: LocalDateTime, endDate: LocalDateTime): List<ClientDTO> {
+        val clients = clientRepo.findClientsBetweenDates(startDate, endDate)
+        return clients.map { it.toClientDTO() }
+    }
 }

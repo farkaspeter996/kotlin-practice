@@ -15,7 +15,7 @@ data class Contact(
 
     val clientContactPhone: String? = null,
 
-    val clientContactType: String = "",
+    var clientContactType: String = "",
 
     val clientContactDate: LocalDateTime = LocalDateTime.now(),
 
