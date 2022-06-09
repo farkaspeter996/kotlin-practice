@@ -1,5 +1,6 @@
 package hu.neuron.service
 
+import ContactTypeEnum
 import hu.neuron.dto.ClientDTO
 import hu.neuron.entity.Client
 import hu.neuron.mapper.toClientDTO
@@ -10,9 +11,14 @@ import hu.neuron.repository.PostCodeToCityRepository
 import hu.neuron.util.sortByFields
 import hu.neuron.util.validate
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.cache.annotation.Cacheable
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 
 @Service
@@ -23,14 +29,9 @@ class ClientServiceImplementation(
     //@Autowired private val template : JdbcAggregateTemplate
 ) : ClientService {
 
-    //@Cacheable(cacheNames = ["existsClientByName"])
-    override fun existsClientByName(clientName: String): Boolean {
-        return clientRepo.existsClientByClientName(clientName)
-    }
+    override fun getClientByName(clientName: String): Set<ClientDTO> {
 
-    override fun getClientByName(clientName: String): List<ClientDTO> {
-
-        val clients: List<Client> = clientRepo.findClientsByClientName(clientName)
+        val clients: List<Client> = clientRepo.findAllByClientName(clientName)
 
         if (clients.isEmpty()) {
             throw Exception("Cannot find user with: $clientName username")
@@ -39,43 +40,57 @@ class ClientServiceImplementation(
         val clientDTOS = clients.map { it.toClientDTO() }
 
         clientDTOS.toMutableList().sortByFields(ClientDTO::clientAddressPostCode, true)
-        return clientDTOS
+        return clientDTOS.toSet()
     }
 
     @Transactional(rollbackFor = [Exception::class])
-    override fun saveClient(clientDTO: ClientDTO): Int {
+    override fun saveClient(clientDTO: ClientDTO): Long {
         try {
+            //TODO PIPA cache-elni a postcode keresést
+            clientDTO.clientAddressCity = getCityByPostCode(clientDTO.clientAddressPostCode)
             clientDTO.validate()
-            clientDTO.contacts.forEach { it.validate()}
 
             val client = clientDTO.toClientEntity()
 
             val contacts = client.contacts
-            client.contacts = emptyList()
+            client.contacts = emptySet()
 
-            client.clientAddressCity = postCodeToCityRepo.findCityByPostcode(client.clientAddressPostCode)
             val clientId = clientRepo.save(client).id
 
             contacts.forEach{
                 it.clientId = clientId
-                it.clientContactType = ContactTypeEnum.from(it.clientContactType)
+                it.clientContactType = ContactTypeEnum.findByValue(it.clientContactType).toString()
             }
 
             contactRepo.saveAll(contacts)
 
             return clientId
         } catch (exception: Exception) {
+            println(exception.printStackTrace())
             throw exception
         }
     }
 
     override fun getClientById(clientId: Long): ClientDTO {
-        val client = clientRepo.findClientById(clientId)
-        return client.toClientDTO()
+        val client = clientRepo.findById(clientId)
+        if(client.isPresent){
+            return client.get().toClientDTO()
+        } else{
+            //TODO PIPA Badrequest exception
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST)
+        }
     }
 
-    override fun getClientsByContactDate(startDate: LocalDateTime, endDate: LocalDateTime): List<ClientDTO> {
+    override fun getClientsByContactDate(startDate: String, endDate: String): Set<ClientDTO> {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        val startDate = LocalDateTime.parse(startDate, formatter)
+        val endDate = LocalDateTime.parse(endDate, formatter)
         val clients = clientRepo.findClientsBetweenDates(startDate, endDate)
-        return clients.map { it.toClientDTO() }
+        return clients.map { it.toClientDTO() }.toSet()
+    }
+
+    @Cacheable(cacheNames = ["getCityByPostCode"])
+    fun getCityByPostCode(postcode : Int) : String {
+       return postCodeToCityRepo.findCityByPostcode(postcode)
     }
 }

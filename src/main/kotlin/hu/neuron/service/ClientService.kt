@@ -5,13 +5,11 @@ import java.time.LocalDateTime
 
 interface ClientService {
 
-    fun existsClientByName(clientName: String) : Boolean
+    fun getClientByName(clientName: String): Set<ClientDTO>
 
-    fun getClientByName(clientName: String): List<ClientDTO>
-
-    fun saveClient(clientDTO: ClientDTO) : Int
+    fun saveClient(clientDTO: ClientDTO) : Long
 
     fun getClientById(clientId: Long): ClientDTO
 
-    fun getClientsByContactDate(startDate: LocalDateTime, endDate: LocalDateTime): List<ClientDTO>
+    fun getClientsByContactDate(startDate: String, endDate: String): Set<ClientDTO>
 }

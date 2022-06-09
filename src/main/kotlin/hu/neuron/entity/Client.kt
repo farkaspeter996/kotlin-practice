@@ -7,7 +7,7 @@ import org.springframework.data.relational.core.mapping.MappedCollection
 data class Client (
 
     @Id
-    val id: Int = 0,
+    val id: Long = 0,
 
     val clientName: String = "",
 
@@ -19,8 +19,8 @@ data class Client (
 
     val clientAddressPostCode: Int = 0,
 
-    var clientAddressCity: String = "",
+    val clientAddressCity: String = "",
 
-    @MappedCollection(idColumn = "client_id", keyColumn = "id")
-    var contacts: List<Contact> = emptyList()
+    @MappedCollection(idColumn = "CLIENT_ID", keyColumn = "id")
+    var contacts: Set<Contact> = emptySet()
 )

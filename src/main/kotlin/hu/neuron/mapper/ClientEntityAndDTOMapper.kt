@@ -7,7 +7,10 @@ import kotlin.reflect.full.memberProperties
 fun Client.toClientDTO() = with(::ClientDTO) {
     val propertiesByName = Client::class.memberProperties.associateBy { it.name }
     callBy(parameters.associateWith { parameter ->
-        propertiesByName[parameter.name]?.get(this@toClientDTO)
+        when(parameter.name){
+            Client::contacts.name ->  contacts.map { it.toContactDTO() }.toSet()
+            else -> propertiesByName[parameter.name]?.get(this@toClientDTO)
+        }
     })
 }
 
@@ -15,7 +18,7 @@ fun ClientDTO.toClientEntity() = with(::Client) {
     val propertiesByName = ClientDTO::class.memberProperties.associateBy { it.name }
     callBy(parameters.associateWith { parameter ->
         when(parameter.name){
-            ClientDTO::contacts.name ->  contacts.map { it.toContactEntity() }
+            ClientDTO::contacts.name ->  contacts.map { it.toContactEntity() }.toSet()
             else -> propertiesByName[parameter.name]?.get(this@toClientEntity)
         }
     })
