@@ -1,6 +1,7 @@
 package hu.neuron.service
 
 import hu.neuron.dto.ClientDTO
+import hu.neuron.dto.ClientWithoutContactDTO
 import java.time.LocalDateTime
 
 interface ClientService {
@@ -11,5 +12,5 @@ interface ClientService {
 
     fun getClientById(clientId: Long): ClientDTO
 
-    fun getClientsByContactDate(startDate: String, endDate: String): Set<ClientDTO>
+    fun getClientsByContactDate(startDate: String, endDate: String): Set<ClientWithoutContactDTO>
 }

@@ -2,6 +2,7 @@ package hu.neuron.controller
 
 import hu.neuron.dto.BaseResponse
 import hu.neuron.dto.ClientDTO
+import hu.neuron.dto.ClientWithoutContactDTO
 import hu.neuron.service.ClientService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -36,8 +37,10 @@ class ClientController( @Autowired private val clientService: ClientService) {
     }
 
     @GetMapping("/clientsByContactDate")
-    fun getClientsByContactDate(@RequestParam startDate: String, @RequestParam endDate: String): ResponseEntity<Set<ClientDTO>>{
+    fun getClientsByContactDate(@RequestParam startDate: String, @RequestParam endDate: String): ResponseEntity<Set<ClientWithoutContactDTO>>{
         return  ResponseEntity(clientService.getClientsByContactDate(startDate, endDate), HttpStatus.OK)
     }
+
+    //TODO clearcache
 
 }

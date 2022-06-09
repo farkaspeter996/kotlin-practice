@@ -1,7 +1,6 @@
 package hu.neuron.mapper
 
 import ContactTypeEnum
-import hu.neuron.dto.ClientDTO
 import hu.neuron.dto.ContactDTO
 import hu.neuron.entity.Contact
 import kotlin.reflect.full.memberProperties

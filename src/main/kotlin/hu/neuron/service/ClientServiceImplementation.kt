@@ -2,9 +2,11 @@ package hu.neuron.service
 
 import ContactTypeEnum
 import hu.neuron.dto.ClientDTO
+import hu.neuron.dto.ClientWithoutContactDTO
 import hu.neuron.entity.Client
 import hu.neuron.mapper.toClientDTO
 import hu.neuron.mapper.toClientEntity
+import hu.neuron.mapper.toClientWithoutContactDTO
 import hu.neuron.repository.ClientRepo
 import hu.neuron.repository.ContactRepository
 import hu.neuron.repository.PostCodeToCityRepository
@@ -81,12 +83,12 @@ class ClientServiceImplementation(
         }
     }
 
-    override fun getClientsByContactDate(startDate: String, endDate: String): Set<ClientDTO> {
+    override fun getClientsByContactDate(startDate: String, endDate: String): Set<ClientWithoutContactDTO> {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-        val startDate = LocalDateTime.parse(startDate, formatter)
-        val endDate = LocalDateTime.parse(endDate, formatter)
-        val clients = clientRepo.findClientsBetweenDates(startDate, endDate)
-        return clients.map { it.toClientDTO() }.toSet()
+        val formattedStartDate = LocalDateTime.parse(startDate, formatter)
+        val formattedEndDate = LocalDateTime.parse(endDate, formatter)
+        val clients = clientRepo.findClientsBetweenDates(formattedStartDate, formattedEndDate)
+        return clients.map { it.toClientWithoutContactDTO() }.toSet()
     }
 
     @Cacheable(cacheNames = ["getCityByPostCode"])

@@ -42,7 +42,7 @@ fun ClientDTO.validate(){
                 ClientDTO::clientEmail.name -> validateEmail(ClientDTO::clientEmail.get(this))
                 ClientDTO::clientPhoneNumber.name -> validatePhoneNumber(ClientDTO::clientPhoneNumber.get(this))
                 ClientDTO::contacts.name -> contacts
-                    .map {
+                    .forEach {
                     validateEmail(it.clientContactEmail!!)
                     validatePhoneNumber(it.clientContactPhone!!)
                 }

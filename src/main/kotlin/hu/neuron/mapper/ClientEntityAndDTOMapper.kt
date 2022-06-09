@@ -1,6 +1,8 @@
 package hu.neuron.mapper
 
 import hu.neuron.dto.ClientDTO
+import hu.neuron.dto.ClientWithoutContactDTO
+import hu.neuron.dto.ContactDTO
 import hu.neuron.entity.Client
 import kotlin.reflect.full.memberProperties
 
@@ -21,6 +23,17 @@ fun ClientDTO.toClientEntity() = with(::Client) {
             ClientDTO::contacts.name ->  contacts.map { it.toContactEntity() }.toSet()
             else -> propertiesByName[parameter.name]?.get(this@toClientEntity)
         }
+    })
+}
+
+fun Client.toClientWithoutContactDTO() = with(::ClientWithoutContactDTO) {
+    val propertiesByName = Client::class.memberProperties.associateBy { it.name }
+    callBy(parameters.associateWith { parameter ->
+        when(parameter.name){
+            Client::contacts.name -> null
+            else -> propertiesByName[parameter.name]?.get(this@toClientWithoutContactDTO)
+        }
+
     })
 }
 
