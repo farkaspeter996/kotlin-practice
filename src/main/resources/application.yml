@@ -3,3 +3,6 @@ spring:
     username: root
     url: jdbc:mysql://localhost:3306/kotlin_demo?AllowPublicKeyRetrieval=true&allowLoadLocalInProfile=true&autoReconnect=true&characterEncoding=utf-8&useUnicode=true&useSSL=false&serverTimezone=Europe/Budapest
     password: root
+springdoc:
+  swagger-ui:
+    path: swagger/swagger-ui.html

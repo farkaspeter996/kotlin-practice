@@ -1,6 +1,6 @@
 package hu.neuron.dto
 
-data class ClientWithoutContactDTO (
+data class ClientWithoutContactDTO(
 
     val id: Long = 0,
 
@@ -16,4 +16,4 @@ data class ClientWithoutContactDTO (
 
     var clientAddressCity: String? = null
 
-    )
+)

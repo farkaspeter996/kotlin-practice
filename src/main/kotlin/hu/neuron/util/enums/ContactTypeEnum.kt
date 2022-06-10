@@ -4,7 +4,6 @@ enum class ContactTypeEnum(val contactValue: String) {
     EXECUTIVE("Ügyvezető"),
     DEFAULT("Kapcsolattartó");
 
-    //TODO PIPA return default
     companion object {
         fun findByValue(enumValue: String?): ContactTypeEnum {
             return try {
@@ -14,5 +13,4 @@ enum class ContactTypeEnum(val contactValue: String) {
             }
         }
     }
-
 }

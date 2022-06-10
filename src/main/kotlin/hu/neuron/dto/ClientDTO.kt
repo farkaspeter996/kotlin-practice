@@ -1,6 +1,6 @@
 package hu.neuron.dto
 
-data class ClientDTO (
+data class ClientDTO(
 
     val id: Long = 0,
 

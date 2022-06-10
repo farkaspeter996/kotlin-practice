@@ -3,9 +3,7 @@ package hu.neuron.entity
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.MappedCollection
 
-
-data class Client (
-
+data class Client(
     @Id
     val id: Long = 0,
 

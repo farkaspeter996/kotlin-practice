@@ -8,5 +8,5 @@ import org.springframework.data.repository.query.Param
 interface PostCodeToCityRepository : CrudRepository<PostCodeToCity, Long> {
 
     @Query("select pctc.city from post_code_to_city as pctc where pctc.postcode = :postcode")
-    fun findCityByPostcode( @Param("postcode") postcode : Int): String
+    fun findCityByPostcode(@Param("postcode") postcode: Int): String
 }

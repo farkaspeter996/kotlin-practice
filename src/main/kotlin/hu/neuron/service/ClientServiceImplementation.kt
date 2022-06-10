@@ -12,23 +12,20 @@ import hu.neuron.repository.ContactRepository
 import hu.neuron.repository.PostCodeToCityRepository
 import hu.neuron.util.sortByFields
 import hu.neuron.util.validate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.server.ResponseStatusException
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-
 
 @Service
 class ClientServiceImplementation(
     @Autowired private val clientRepo: ClientRepo,
     @Autowired private val contactRepo: ContactRepository,
     @Autowired private val postCodeToCityRepo: PostCodeToCityRepository
-    //@Autowired private val template : JdbcAggregateTemplate
 ) : ClientService {
 
     override fun getClientByName(clientName: String): Set<ClientDTO> {
@@ -48,7 +45,6 @@ class ClientServiceImplementation(
     @Transactional(rollbackFor = [Exception::class])
     override fun saveClient(clientDTO: ClientDTO): Long {
         try {
-            //TODO PIPA cache-elni a postcode keresést
             clientDTO.clientAddressCity = getCityByPostCode(clientDTO.clientAddressPostCode)
             clientDTO.validate()
 
@@ -59,7 +55,7 @@ class ClientServiceImplementation(
 
             val clientId = clientRepo.save(client).id
 
-            contacts.forEach{
+            contacts.forEach {
                 it.clientId = clientId
                 it.clientContactType = ContactTypeEnum.findByValue(it.clientContactType).toString()
             }
@@ -75,10 +71,9 @@ class ClientServiceImplementation(
 
     override fun getClientById(clientId: Long): ClientDTO {
         val client = clientRepo.findById(clientId)
-        if(client.isPresent){
+        if (client.isPresent) {
             return client.get().toClientDTO()
-        } else{
-            //TODO PIPA Badrequest exception
+        } else {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST)
         }
     }
@@ -92,7 +87,7 @@ class ClientServiceImplementation(
     }
 
     @Cacheable(cacheNames = ["getCityByPostCode"])
-    fun getCityByPostCode(postcode : Int) : String {
-       return postCodeToCityRepo.findCityByPostcode(postcode)
+    fun getCityByPostCode(postcode: Int): String {
+        return postCodeToCityRepo.findCityByPostcode(postcode)
     }
 }

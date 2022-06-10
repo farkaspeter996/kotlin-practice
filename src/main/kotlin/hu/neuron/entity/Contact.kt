@@ -1,11 +1,9 @@
 package hu.neuron.entity
 
-import org.springframework.data.annotation.Id
 import java.time.LocalDateTime
-
+import org.springframework.data.annotation.Id
 
 data class Contact(
-
     @Id
     val id: Long = 0,
 
